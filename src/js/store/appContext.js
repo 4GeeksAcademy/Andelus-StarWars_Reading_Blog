@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import getState from "./flux.js";
 
+//Lo que más interesa es:
+
 // Don't change, here is where we initialize our context, by default it's just going to be null.
 export const Context = React.createContext(null);
 
@@ -9,8 +11,10 @@ export const Context = React.createContext(null);
 const injectContext = PassedComponent => {
 	const StoreWrapper = props => {
 		//this will be passed as the contenxt value
+		// state variable, setState lafunción que cambia ese estado
 		const [state, setState] = useState(
 			getState({
+				// estos 3 están en flux objeto con claves
 				getStore: () => state.store,
 				getActions: () => state.actions,
 				setStore: updatedStore =>
@@ -20,17 +24,14 @@ const injectContext = PassedComponent => {
 					})
 			})
 		);
-
+		// dentro del useEffect pondremos todas las funciones que se ejecuten cuando nuestra app se inicie (similar al onload)
 		useEffect(() => {
-			/**
-			 * EDIT THIS!
-			 * This function is the equivalent to "window.onLoad", it only runs once on the entire application lifetime
-			 * you should do your ajax requests or fetch api requests here. Do not use setState() to save data in the
-			 * store, instead use actions, like this:
-			 *
-			 * state.actions.loadSomeData(); <---- calling this function from the flux.js actions
-			 *
-			 **/
+			state.actions.getCharacters();
+			state.actions.getPlanets(); 
+			state.actions.getStarships();// me traigo la función para poder usarla en nuestar app(?)
+			// state.actions.getCharactersDetail();
+			state.actions.getPlanetsDetail();
+			state.actions.getStarshipDetail();
 		}, []);
 
 		// The initial value for the context is not null anymore, but the current state of this component,

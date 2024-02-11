@@ -1,43 +1,125 @@
+// get state es una función. Importante el store y el action
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
+		// store es un objeo con variables globales
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			// STAR WARS
+			favorites: [],
+			characters: [],
+			planets: [],
+			starships: [],
+			detailCharacter: {},
+			detailPlanet: {},
+			detailStarship: {}
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
+
+			addFavorite: (item) => {
 				const store = getStore();
+				setStore({ favorites: [...store.favorites, item] })
+			},
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+			removeFavorite: (name) => {
+				const store = getStore();
+				setStore({ favorites: store.favorites.filter((item, id) => { return item != name }) })
 
-				//reset the global store
-				setStore({ demo: demo });
+			},
+
+			getCharacters: async () => {
+				const url = "https://www.swapi.tech/api/people";
+				const options = {
+					method: 'GET'
+				};
+				const response = await fetch(url, options);
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ "characters": data.results })
+					localStorage.setItem('characters', JSON.stringify(data.results));
+					console.log(data);
+
+				} else {
+					console.log('Error:', response.status, response.statusText)
+				}
+			},
+			getPlanets: async () => {
+				const url = "https://www.swapi.tech/api/planets";
+				const options = {
+					method: 'GET'
+				};
+				const response = await fetch(url, options);
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ "planets": data.results });
+					console.log(data);
+				} else {
+					console.log('Error:', response.status, response.statusText)
+				}
+			},
+
+			getStarships: async () => {
+				const url = "https://www.swapi.tech/api/starships";
+				const options = {
+					method: 'GET'
+				};
+				const response = await fetch(url, options);
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ "starships": data.results });
+					console.log(data);
+				} else {
+					console.log('Error:', response.status, response.statusText)
+				}
+			},
+
+			getCharactersDetail: async (id) => {
+				// const url = `${process.env.API_URL}/people/${id}`;
+				const url = `https://www.swapi.tech/api/people/${id}`;
+				console.log("Esto es la url -> ",url);
+				const options = { 
+					method: 'GET'
+				};
+				const response = await fetch(url, options);
+				
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ detailCharacter: data });
+					console.log("Get character detail -> ",data)
+				} else {
+					console.log('Error:', response.status, response.statusText);
+				}
+			},
+
+			getPlanetsDetail: async (id) => {
+				const url = `https://www.swapi.tech/api/planets/${id}`;
+				const options = {
+					method: 'GET'
+				};
+				const response = await fetch(url, options);
+				
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ detailPlanet: data });
+				} else {
+					console.log('Error:', response.status, response.statusText);
+				}
+			},
+
+			getStarshipDetail: async (id) => {
+				console.log("Esto es el id -> ",id);
+				const url = `https://www.swapi.tech/api/starships/${id}`;
+				const options = { method: 'GET' };
+				console.log("Esto es la url -> ",url);
+				const response = await fetch(url, options);
+				console.log("Esto es la response -> ",response);
+
+				if (response.ok) {
+					const data = await response.json();
+					setStore({ detailStarship: data });
+				} else {
+					console.log('Error:', response.status, response.statusText);
+				}
 			}
+
 		}
 	};
 };
